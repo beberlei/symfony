@@ -64,15 +64,6 @@ class EntityChoiceList extends ArrayChoiceList
     private $identifier = array();
 
     /**
-     * A cache for \ReflectionProperty instances for the underlying class
-     *
-     * This property should only be accessed through getReflProperty().
-     *
-     * @var array
-     */
-    private $reflProperties = array();
-
-    /**
      * A cache for the UnitOfWork instance of Doctrine
      *
      * @var Doctrine\ORM\UnitOfWork
@@ -242,43 +233,7 @@ class EntityChoiceList extends ArrayChoiceList
             $this->load();
         }
 
-        try {
-            if (count($this->identifier) > 1) {
-                // $key is a collection index
-                $entities = $this->getEntities();
-
-                return isset($entities[$key]) ? $entities[$key] : null;
-            } else if ($this->entities) {
-                return isset($this->entities[$key]) ? $this->entities[$key] : null;
-            } else if ($qb = $this->queryBuilder) {
-                // should we clone the builder?
-                $alias = $qb->getRootAlias();
-                $where = $qb->expr()->eq($alias.'.'.current($this->identifier), $key);
-
-                return $qb->andWhere($where)->getQuery()->getSingleResult();
-            }
-
-            return $this->em->find($this->class, $key);
-        } catch (NoResultException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the \ReflectionProperty instance for a property of the
-     * underlying class
-     *
-     * @param  string $property     The name of the property
-     * @return \ReflectionProperty  The reflection instance
-     */
-    private function getReflProperty($property)
-    {
-        if (!isset($this->reflProperties[$property])) {
-            $this->reflProperties[$property] = new \ReflectionProperty($this->class, $property);
-            $this->reflProperties[$property]->setAccessible(true);
-        }
-
-        return $this->reflProperties[$property];
+        return isset($this->entities[$key]) ? $this->entities[$key] : null;
     }
 
     /**
