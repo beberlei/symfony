@@ -18,6 +18,7 @@ namespace Symfony\Component\Cache;
  * that support caching, such as Validation, ClassLoader.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Florin Patan <florinpatan@gmail.com>
  */
 class ApcCache implements CacheInterface
 {
@@ -26,26 +27,21 @@ class ApcCache implements CacheInterface
         if (!extension_loaded('apc')) {
             throw new \RuntimeException("You need the APC php extension installed to use this cache driver.");
         }
+
+        if (strnatcmp(phpversion(),'3.0.17') < 0) {
+            throw new \RuntimeException("You need to have APC version 3.0.17 or newer in order to run this.");
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetch($id)
+    public function fetch($id, &$data)
     {
-        return apc_fetch($id);
-    }
+        $result = false;
+        $data = apc_fetch($id, $result);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function contains($id)
-    {
-        $found = false;
-
-        apc_fetch($id, $found);
-
-        return $found;
+        return $result;
     }
 
     /**
