@@ -23,13 +23,21 @@ namespace Symfony\Component\Cache;
 interface CacheInterface
 {
     /**
-     * Fetches an entry from the cache.
+     * Get an entry from the cache.
+     *
+     * @param string $id cache id The id of the cache entry to fetch.
+     * @return mixed result The cached value from the system
+     */
+    function get($key);
+
+    /**
+     * Fetches an entry from the cache and returns it's availability at the time of fetching.
      *
      * @param string $id cache id The id of the cache entry to fetch.
      * @param mixed  $data cached data The value cached for the $id key.
      * @return boolean The result of fecthing the key from the cache system
      */
-    function get($key, &$data);
+    function fetch($key, &$data);
 
     /**
      * Puts data into the cache.

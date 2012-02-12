@@ -32,26 +32,48 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUnknownReturnsFalse()
     {
-        $value = '';
-        $result = $this->cache->get('unknown', $value);
+        $result = $this->cache->get('unknown');
         $this->assertFalse($result);
     }
 
     public function testGetKnownReturnsValue()
     {
         $this->cache->set('known', 1);
-        $value = '';
-        $result = $this->cache->get('known', $value);
+        $result = $this->cache->get('known');
 
-        $this->assertTrue($result);
-        $this->assertSame(1, $value);
+        $this->assertSame(1, $result);
     }
 
     public function testGetKnownFalse()
     {
         $this->cache->set('false', false);
+        $result = $this->cache->get('false');
+
+        $this->assertFalse($result);
+    }
+
+    public function testFetchUnknownReturnsFalse()
+    {
         $value = '';
-        $result = $this->cache->get('false', $value);
+        $result = $this->cache->fetch('unknown', $value);
+        $this->assertFalse($result);
+    }
+
+    public function testFetchKnownReturnsValue()
+    {
+        $this->cache->set('known', 1);
+        $value = '';
+        $result = $this->cache->fetch('known', $value);
+
+        $this->assertTrue($result);
+        $this->assertSame(1, $value);
+    }
+
+    public function testFetchKnownFalse()
+    {
+        $this->cache->set('false', false);
+        $value = '';
+        $result = $this->cache->fetch('false', $value);
 
         $this->assertTrue($result);
         $this->assertFalse($value);
