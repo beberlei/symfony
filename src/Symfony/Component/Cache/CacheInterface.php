@@ -29,17 +29,20 @@ interface CacheInterface
      * @param mixed  $data cached data The value cached for the $id key.
      * @return boolean The result of fecthing the key from the cache system
      */
-    function fetch($id, &$data);
+    function get($key, &$data);
 
     /**
      * Puts data into the cache.
      *
+     * For the moment the only recognized option is:
+     * - lifetime: expressed in seconds (default 0 = infinite). If != 0, sets a specific lifetime for this cache entry
+     *
      * @param string $id The cache id.
      * @param string $data The cache entry/data.
-     * @param int $lifeTime The lifetime in seconds. If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
+     * @param array $options Various options to set the variables.
      * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    function save($id, $data, $lifeTime = 0);
+    function set($key, $data, $options = array());
 
     /**
      * Deletes a cache entry.
@@ -47,6 +50,23 @@ interface CacheInterface
      * @param string $id cache id
      * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    function delete($id);
+    function delete($key);
+
+    /**
+     * Check if the key exists in the cache.
+     *
+     * @param string $key
+     * @return boolean
+     */
+    function exists($key);
+
+    /**
+     * Clears the entire cache.
+     *
+     * Implementations may choose to ignore this. What happens in this case is up to the implementor.
+     *
+     * @return void
+     */
+    function clear();
 }
 

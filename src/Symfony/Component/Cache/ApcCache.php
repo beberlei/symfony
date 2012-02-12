@@ -36,10 +36,10 @@ class ApcCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function fetch($id, &$data)
+    public function get($key, &$data)
     {
         $result = false;
-        $data = apc_fetch($id, $result);
+        $data = apc_fetch($key, $result);
 
         return $result;
     }
@@ -47,16 +47,39 @@ class ApcCache implements CacheInterface
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = 0)
+    public function set($key, $data, $options = array())
     {
-        return (bool) apc_store($id, $data, (int) $lifeTime);
+        // Check if we have any lifeTime specified for the cache entry
+        if (isset($options['lifeTime'])) {
+            $lifeTime = (int) $options['lifeTime'];
+        } else {
+            $lifeTime = 0;
+        }
+
+        return apc_store($key, $data, $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id)
+    public function delete($key)
     {
-        return apc_delete($id);
+        return apc_delete($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exists($key)
+    {
+        return apc_exists($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        return apc_clear_cache('user');
     }
 }

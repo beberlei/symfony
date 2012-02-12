@@ -25,33 +25,33 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveReturnsTrueOnSuccess()
     {
-        $ret = $this->cache->save('id', 1);
+        $ret = $this->cache->set('id', 1);
 
         $this->assertTrue($ret);
     }
 
-    public function testFetchUnknownReturnsFalse()
+    public function testGetUnknownReturnsFalse()
     {
         $value = '';
-        $result = $this->cache->fetch('unknown', $value);
+        $result = $this->cache->get('unknown', $value);
         $this->assertFalse($result);
     }
 
-    public function testFetchKnownReturnsValue()
+    public function testGetKnownReturnsValue()
     {
-        $this->cache->save('known', 1);
+        $this->cache->set('known', 1);
         $value = '';
-        $result = $this->cache->fetch('known', $value);
+        $result = $this->cache->get('known', $value);
 
         $this->assertTrue($result);
         $this->assertSame(1, $value);
     }
 
-    public function testFetchKnownFalse()
+    public function testGetKnownFalse()
     {
-        $this->cache->save('false', false);
+        $this->cache->set('false', false);
         $value = '';
-        $result = $this->cache->fetch('false', $value);
+        $result = $this->cache->get('false', $value);
 
         $this->assertTrue($result);
         $this->assertFalse($value);
@@ -59,29 +59,35 @@ class ApcCacheTest extends \PHPUnit_Framework_TestCase
 
     public function testContainsFalseValue()
     {
-        $this->cache->save('contains_false', false);
+        $this->cache->set('contains_false', false);
 
-        $value = '';
-        $this->assertTrue($this->cache->fetch('contains_false', $value));
+        $this->assertTrue($this->cache->exists('contains_false'));
     }
 
     public function testContainsValue()
     {
-        $this->cache->save('contains', 1234);
+        $this->cache->set('contains', 1234);
 
-        $value = '';
-        $this->assertTrue($this->cache->fecth('contains', $value));
+        $this->assertTrue($this->cache->exists('contains'));
     }
 
     public function testDelete()
     {
-        $this->cache->save('delete', 1234);
+        $this->cache->set('delete', 1234);
 
-        $value = '';
-        $this->assertTrue($this->cache->contains('delete', $value));
+        $this->assertTrue($this->cache->exists('delete'));
 
         $this->cache->delete('delete');
-        $this->assertFalse($this->cache->contains('delete', $value));
+        $this->assertFalse($this->cache->exists('delete'));
+    }
+
+    public function testClear()
+    {
+        $this->cache->set('delete', 1234);
+
+        $this->cache->clear();
+
+        $this->assertFalse($this->cache->exists('delete'));
     }
 }
 
