@@ -41,6 +41,9 @@ class ApcCache implements CacheInterface
         return apc_fetch($key);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function fetch($key, &$data)
     {
         $result = false;
