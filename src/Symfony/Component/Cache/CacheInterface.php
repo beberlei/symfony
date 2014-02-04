@@ -18,34 +18,39 @@ namespace Symfony\Component\Cache;
  * bundle to allow central cache management.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Florin Patan <florinpatan@gmail.com>
  */
 interface CacheInterface
 {
     /**
-     * Fetches an entry from the cache.
+     * Get an entry from the cache.
      *
      * @param string $id cache id The id of the cache entry to fetch.
-     * @return string The cached data or FALSE, if no cache entry exists for the given id.
+     * @return mixed result The cached value from the system
      */
-    function fetch($id);
+    function get($key);
 
     /**
-     * Test if an entry exists in the cache.
+     * Fetches an entry from the cache and returns it's availability at the time of fetching.
      *
-     * @param string $id cache id The cache id of the entry to check for.
-     * @return boolean TRUE if a cache entry exists for the given cache id, FALSE otherwise.
+     * @param string $id cache id The id of the cache entry to fetch.
+     * @param mixed  $data cached data The value cached for the $id key.
+     * @return boolean The result of fecthing the key from the cache system
      */
-    function contains($id);
+    function fetch($key, &$data);
 
     /**
      * Puts data into the cache.
      *
+     * For the moment the only recognized option is:
+     * - lifetime: expressed in seconds (default 0 = infinite). If != 0, sets a specific lifetime for this cache entry
+     *
      * @param string $id The cache id.
      * @param string $data The cache entry/data.
-     * @param int $lifeTime The lifetime. If != 0, sets a specific lifetime for this cache entry (0 => infinite lifeTime).
+     * @param array $options Various options to set the variables.
      * @return boolean TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    function save($id, $data, $lifeTime = 0);
+    function set($key, $data, $options = array());
 
     /**
      * Deletes a cache entry.
@@ -53,6 +58,23 @@ interface CacheInterface
      * @param string $id cache id
      * @return boolean TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    function delete($id);
+    function delete($key);
+
+    /**
+     * Check if the key exists in the cache.
+     *
+     * @param string $key
+     * @return boolean
+     */
+    function exists($key);
+
+    /**
+     * Clears the entire cache.
+     *
+     * Implementations may choose to ignore this. What happens in this case is up to the implementor.
+     *
+     * @return void
+     */
+    function clear();
 }
 

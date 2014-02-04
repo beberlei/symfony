@@ -22,7 +22,7 @@ delegate cache driver `Symfony\Component\Cache\DoctrineCache`.
     $cache = new ApcCache();
     $cache->save("key", "value");
 
-    if ($cache->contains("key")) {
-        echo $cache->fetch("key");
+    if ($cache->contains("key", $data)) {
+        echo $data;
     }
     $cache->delete("key");

@@ -18,6 +18,7 @@ namespace Symfony\Component\Cache;
  * that support caching, such as Validation, ClassLoader.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Florin Patan <florinpatan@gmail.com>
  */
 class ApcCache implements CacheInterface
 {
@@ -26,41 +27,67 @@ class ApcCache implements CacheInterface
         if (!extension_loaded('apc')) {
             throw new \RuntimeException("You need the APC php extension installed to use this cache driver.");
         }
+
+        if (strnatcmp(phpversion(),'3.0.17') < 0) {
+            throw new \RuntimeException("You need to have APC version 3.0.17 or newer in order to run this.");
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetch($id)
+    public function get($key)
     {
-        return apc_fetch($id);
+        return apc_fetch($key);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function contains($id)
+    public function fetch($key, &$data)
     {
-        $found = false;
+        $result = false;
+        $data = apc_fetch($key, $result);
 
-        apc_fetch($id, $found);
-
-        return $found;
+        return $result;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = 0)
+    public function set($key, $data, $options = array())
     {
-        return (bool) apc_store($id, $data, (int) $lifeTime);
+        // Check if we have any lifeTime specified for the cache entry
+        if (isset($options['lifeTime'])) {
+            $lifeTime = (int) $options['lifeTime'];
+        } else {
+            $lifeTime = 0;
+        }
+
+        return apc_store($key, $data, $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id)
+    public function delete($key)
     {
-        return apc_delete($id);
+        return apc_delete($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function exists($key)
+    {
+        return apc_exists($key);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        return apc_clear_cache('user');
     }
 }
